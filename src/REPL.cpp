@@ -51,7 +51,6 @@ void dialogueAjouterAnimal(Ferme& ferme) {
         return;
     }
     
-    // Créer et ajouter l'animal
     Animal nouvelAnimal = {nom, type, age};
     ferme.ajouterAnimal(nouvelAnimal);
     
@@ -62,8 +61,15 @@ void afficherAide() {
     std::cout << "\nAide :" << std::endl;
     std::cout << "  ajouter  - Ajouter un nouvel animal à la ferme" << std::endl;
     std::cout << "  afficher - Afficher le contenu de la ferme" << std::endl;
+    std::cout << "  cls      - Effacer l'écran" << std::endl;
     std::cout << "  aide     - Afficher cette aide" << std::endl;
     std::cout << "  quitter  - Quitter le programme" << std::endl;
+}
+
+void effacerEcran() {
+    // Utilise les séquences d'échappement ANSI pour effacer l'écran
+    // \033[2J efface l'écran, \033[H replace le curseur en haut à gauche
+    std::cout << "\033[2J\033[H" << std::flush;
 }
 
 void demarrer() {
@@ -87,6 +93,9 @@ void demarrer() {
         }
         else if (commandeLower == "afficher" || commandeLower == "show" || commandeLower == "list") {
             ferme.afficher();
+        }
+        else if (commandeLower == "cls" || commandeLower == "clear") {
+            effacerEcran();
         }
         else if (commandeLower == "aide" || commandeLower == "help" || commandeLower == "?") {
             afficherAide();

@@ -12,6 +12,8 @@ namespace REPL {
     
     void afficherAide();
     
+    void effacerEcran();
+    
     std::string lireLigne(const std::string& prompt);
     
     std::string toLower(std::string str);
