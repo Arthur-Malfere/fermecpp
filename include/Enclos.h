@@ -9,20 +9,21 @@ class Enclos {
 private:
     std::string typeAnimal;
     std::vector<Animal> animaux;
+    bool validerAjout(const Animal& animal) const;
 
 public:
-
-    bool peutAjouter(const Animal& animal) const;
-    
-    void ajouterAnimal(const Animal& animal);
-    
+ 
     const std::string& getTypeAnimal() const;
     
+    bool ajouterAnimal(const Animal& animal);
+    
     const std::vector<Animal>& getAnimaux() const;
-
+    
     size_t getNombreAnimaux() const;
     
     bool estVide() const;
+    
+    void afficher() const;
 };
 
 #endif // ENCLOS_H

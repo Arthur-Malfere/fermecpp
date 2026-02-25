@@ -1,39 +1,45 @@
 #include "Ferme.h"
 #include <iostream>
 
-void Ferme::ajouterAnimal(const Animal& animal) {
-    for (auto& e : enclos) {
-        if (e.getTypeAnimal() == animal.type) {
-            e.ajouterAnimal(animal);
-            return;
+int Ferme::trouverEnclosCompatible(const Animal& animal) const {
+    for (size_t i = 0; i < enclos.size(); ++i) {
+        if (enclos[i].getTypeAnimal() == animal.getType()) {
+            return static_cast<int>(i);
         }
+    }
+    return -1;
+}
+
+bool Ferme::ajouterAnimal(const Animal& animal) {
+    int indexEnclos = trouverEnclosCompatible(animal);
+    
+    if (indexEnclos != -1) {
+        return enclos[indexEnclos].ajouterAnimal(animal);
     }
     
     Enclos nouvelEnclos;
-    nouvelEnclos.ajouterAnimal(animal);
-    enclos.push_back(nouvelEnclos);
+    if (nouvelEnclos.ajouterAnimal(animal)) {
+        enclos.push_back(nouvelEnclos);
+        return true;
+    }
+    
+    return false;
 }
 
 void Ferme::afficher() const {
-    if (enclos.empty()) {
-        std::cout << "La ferme est vide. Aucun animal pour le moment." << std::endl;
+    if (estVide()) {
+        std::cout << "\nLa ferme est vide. Aucun animal pour le moment." << std::endl;
         return;
     }
     
     std::cout << "\nContenu : " << std::endl;
     
-    int totalAnimaux = 0;
-    for (size_t i = 0; i < enclos.size(); i++) {
-        std::cout << "\nEnclos " << i+1 << " - Type: " << enclos[i].getTypeAnimal() << std::endl;
-        std::cout << "  Nombre d'animaux: " << enclos[i].getNombreAnimaux() << std::endl;
-        
-        for (const auto& animal : enclos[i].getAnimaux()) {
-            std::cout << "    • " << animal.nom << " - " << animal.age << " ans" << std::endl;
-            totalAnimaux++;
-        }
+    for (size_t i = 0; i < enclos.size(); ++i) {
+        std::cout << "\nEnclos " << (i + 1) << " - Type: " << enclos[i].getTypeAnimal() << std::endl;
+        enclos[i].afficher();
     }
     
-    std::cout << "\nTotal: " << totalAnimaux << " animaux dans " << enclos.size() << " enclos" << std::endl;
+    afficherStatistiques();
 }
 
 size_t Ferme::getNombreEnclos() const {
@@ -50,4 +56,10 @@ size_t Ferme::getNombreTotalAnimaux() const {
 
 bool Ferme::estVide() const {
     return enclos.empty();
+}
+
+void Ferme::afficherStatistiques() const {
+    std::cout << "\n--- Statistiques ---" << std::endl;
+    std::cout << "Total animaux: " << getNombreTotalAnimaux() << std::endl;
+    std::cout << "Nombre d'enclos: " << getNombreEnclos() << std::endl;
 }

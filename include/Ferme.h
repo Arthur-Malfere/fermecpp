@@ -7,10 +7,11 @@
 class Ferme {
 private:
     std::vector<Enclos> enclos;
+    int trouverEnclosCompatible(const Animal& animal) const;
 
 public:
 
-    void ajouterAnimal(const Animal& animal);
+    bool ajouterAnimal(const Animal& animal);
     
     void afficher() const;
     
@@ -19,6 +20,8 @@ public:
     size_t getNombreTotalAnimaux() const;
     
     bool estVide() const;
+    
+    void afficherStatistiques() const;
 };
 
 #endif // FERME_H

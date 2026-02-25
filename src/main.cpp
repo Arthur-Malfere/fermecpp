@@ -1,6 +1,7 @@
-#include "REPL.h"
+#include "REPLEngine.h"
 
 int main() {
-    REPL::demarrer();
+    REPLEngine repl;
+    repl.run();
     return 0;
 }
