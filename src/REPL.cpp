@@ -67,8 +67,6 @@ void afficherAide() {
 }
 
 void effacerEcran() {
-    // Utilise les séquences d'échappement ANSI pour effacer l'écran
-    // \033[2J efface l'écran, \033[H replace le curseur en haut à gauche
     std::cout << "\033[2J\033[H" << std::flush;
 }
 
