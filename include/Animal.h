@@ -9,6 +9,7 @@ private:
     std::string nom;
     std::string type;
     int age;
+    double espaceRequis;  // En m²
 
 public:
 
@@ -17,12 +18,16 @@ public:
     const std::string& getNom() const;
 
     const std::string& getType() const;
-    
+
     int getAge() const;
-    
+
+    double getEspaceRequis() const;
+
     void afficher() const;
     
     bool estDuMemeType(const Animal& autre) const;
+    
+    static double getEspaceRequisParType(const std::string& type);
 };
 
 #endif // ANIMAL_H

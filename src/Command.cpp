@@ -4,25 +4,48 @@
 
 void CommandeAjouter::executer(Ferme& ferme) {
     std::cout << "\n--- Ajouter un nouvel animal ---" << std::endl;
-    std::string nom = InputHandler::lireLigne("Nom de l'animal: ");
+    
+    // Afficher les types disponibles avec espace requis
+    std::cout << "\nTypes d'animaux disponibles (espace requis):" << std::endl;
+    std::cout << "  • Vache (15 m²)" << std::endl;
+    std::cout << "  • Cheval (20 m²)" << std::endl;
+    std::cout << "  • Cochon (8 m²)" << std::endl;
+    std::cout << "  • Mouton (5 m²)" << std::endl;
+    std::cout << "  • Chèvre (4 m²)" << std::endl;
+    std::cout << "  • Poule (1.5 m²)" << std::endl;
+    std::cout << "  • Canard (2 m²)" << std::endl;
+    
+    // Demander le nom
+    std::string nom = InputHandler::lireLigne("\nNom de l'animal: ");
     nom = InputHandler::nettoyer(nom);
     if (nom.empty()) {
         std::cout << "Erreur: Le nom ne peut pas être vide." << std::endl;
         return;
     }
-    std::string type = InputHandler::lireLigne("Type d'animal (Vache, Cochon, Poule, Mouton, etc.): ");
+    
+    // Demander le type
+    std::string type = InputHandler::lireLigne("Type d'animal: ");
     type = InputHandler::nettoyer(type);
     if (type.empty()) {
         std::cout << "Erreur: Le type ne peut pas être vide." << std::endl;
         return;
     }
+    
     type = InputHandler::formaterType(type);
+    
+    double espacePrevenu = Animal::getEspaceRequisParType(type);
+    std::cout << "Info: Cet animal occupera " << espacePrevenu << " m²" << std::endl;
+    
     int age = InputHandler::lireEntier("Âge de l'animal (en années): ", 0, 200);
+    
     Animal nouvelAnimal(nom, type, age);
     if (ferme.ajouterAnimal(nouvelAnimal)) {
         std::cout << "✓ " << nom << " a été ajouté à la ferme avec succès!" << std::endl;
     } else {
-        std::cout << "Erreur lors de l'ajout de l'animal." << std::endl;
+        std::cout << "Erreur: Impossible d'ajouter " << nom << " à la ferme." << std::endl;
+        std::cout << "Raison possible:" << std::endl;
+        std::cout << "  - Type d'animal incompatible avec l'enclos existant" << std::endl;
+        std::cout << "  - Espace insuffisant dans l'enclos pour ce type d'animal" << std::endl;
     }
 }
 

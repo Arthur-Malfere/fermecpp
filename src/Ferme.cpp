@@ -1,5 +1,6 @@
 #include "Ferme.h"
 #include <iostream>
+#include <iomanip>
 
 int Ferme::trouverEnclosCompatible(const Animal& animal) const {
     for (size_t i = 0; i < enclos.size(); ++i) {
@@ -32,7 +33,7 @@ void Ferme::afficher() const {
         return;
     }
     
-    std::cout << "\nContenu : " << std::endl;
+    std::cout << "\n--- Contenu de la ferme ---" << std::endl;
     
     for (size_t i = 0; i < enclos.size(); ++i) {
         std::cout << "\nEnclos " << (i + 1) << " - Type: " << enclos[i].getTypeAnimal() << std::endl;
@@ -59,7 +60,19 @@ bool Ferme::estVide() const {
 }
 
 void Ferme::afficherStatistiques() const {
-    std::cout << "\n--- Statistiques ---" << std::endl;
-    std::cout << "Total animaux: " << getNombreTotalAnimaux() << std::endl;
-    std::cout << "Nombre d'enclos: " << getNombreEnclos() << std::endl;
+    std::cout << "\n--- Statistiques Globales de la Ferme ---" << std::endl;
+    std::cout << "Nombre total d'enclos: " << getNombreEnclos() << std::endl;
+    std::cout << "Nombre total d'animaux: " << getNombreTotalAnimaux() << std::endl;
+    
+    double espaceTotal = 0.0;
+    double spaceUtilise = 0.0;
+    for (const auto& e : enclos) {
+        espaceTotal += e.getSuperficieTotale();
+        spaceUtilise += e.getEspaceOccupe();
+    }
+    
+    std::cout << "Espace utilisé: " << spaceUtilise << " m² / " << espaceTotal << " m²" << std::endl;
+    
+    double pourcentageUtilisation = (espaceTotal > 0) ? (spaceUtilise / espaceTotal) * 100 : 0;
+    std::cout << "Taux d'utilisation: " << pourcentageUtilisation << "%" << std::endl;
 }
