@@ -1,0 +1,32 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format clang-tidy cppcheck
+
+    - name: Run clang-format check
+      run: |
+        find src include -name "*.cpp" -o -name "*.h" | xargs clang-format --dry-run -Werror
+
+    - name: Run clang-tidy
+      run: |
+        cmake -B build -S . -DCMAKE_CXX_CLANG_TIDY=clang-tidy
+        cmake --build build
+
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --suppress=missingIncludeSystem src/ include/
