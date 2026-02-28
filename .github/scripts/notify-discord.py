@@ -4,7 +4,7 @@ import os
 import sys
 import urllib.request
 import urllib.error
-from datetime import datetime
+from datetime import datetime, timezone
 
 def send_discord_notification(webhook_url, status, title, os_name, compiler, artifact_name=None):
     """
@@ -69,7 +69,7 @@ def send_discord_notification(webhook_url, status, title, os_name, compiler, art
                 "inline": True
             }
         ],
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "footer": {
             "text": "GitHub Actions",
             "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
@@ -110,9 +110,17 @@ def send_discord_notification(webhook_url, status, title, os_name, compiler, art
         req.add_header('Content-Type', 'application/json')
         
         with urllib.request.urlopen(req, timeout=10) as response:
-            print("Discord notification sent successfully!")
-        return True
-    except (urllib.error.URLError, urllib.error.HTTPError) as e:
+            if response.status == 204:
+                print("Discord notification sent successfully!")
+                return True
+            else:
+                print(f"Unexpected response code: {response.status}", file=sys.stderr)
+                return False
+    except urllib.error.HTTPError as e:
+        print(f"HTTP Error {e.code}: {e.reason}", file=sys.stderr)
+        print(f"Webhook URL may be invalid or expired", file=sys.stderr)
+        return False
+    except urllib.error.URLError as e:
         print(f"Failed to send Discord notification: {e}", file=sys.stderr)
         return False
     except Exception as e:
@@ -121,7 +129,7 @@ def send_discord_notification(webhook_url, status, title, os_name, compiler, art
 
 if __name__ == "__main__":
     webhook_url = os.getenv("DISCORD_WEBHOOK")
-    status = os.getenv("JOB_STATUS", "unknown")
+    status = os.getenv("JOB_STATUS", "unknown").lower()
     title = os.getenv("BUILD_TITLE", "Build Notification")
     os_name = os.getenv("RUNNER_OS", "Unknown")
     compiler = os.getenv("COMPILER", "Unknown")
@@ -129,7 +137,16 @@ if __name__ == "__main__":
     
     if not webhook_url:
         print("Error: DISCORD_WEBHOOK environment variable not set", file=sys.stderr)
+        print("Make sure you've added the secret to your GitHub repository", file=sys.stderr)
         sys.exit(1)
+    
+    if not webhook_url.startswith("https://"):
+        print(f"Error: Invalid webhook URL format", file=sys.stderr)
+        print(f"Expected URL format: https://discord.com/api/webhooks/...", file=sys.stderr)
+        sys.exit(1)
+    
+    print(f"Sending Discord notification...")
+    print(f"Status: {status}, OS: {os_name}, Compiler: {compiler}")
     
     success = send_discord_notification(webhook_url, status, title, os_name, compiler, artifact_name)
     sys.exit(0 if success else 1)
