@@ -30,3 +30,13 @@ jobs:
     - name: Run cppcheck
       run: |
         cppcheck --enable=all --suppress=missingIncludeSystem src/ include/
+
+    - name: Send Discord Notification
+      if: always()
+      run: python3 .github/scripts/notify-discord.py
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        JOB_STATUS: ${{ job.status }}
+        BUILD_TITLE: "Code Quality Check"
+        RUNNER_OS: "ubuntu-latest"
+        COMPILER: "clang-tidy"

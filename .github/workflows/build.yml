@@ -53,3 +53,14 @@ jobs:
         name: fermecpp-${{ matrix.os }}-${{ matrix.compiler }}
         path: build/fermecpp${{ runner.os == 'Windows' && '.exe' || '' }}
         retention-days: 5
+
+    - name: Send Discord Notification
+      if: always()
+      run: python3 .github/scripts/notify-discord.py
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        JOB_STATUS: ${{ job.status }}
+        BUILD_TITLE: "Build CI - ${{ matrix.os }} (${{ matrix.compiler }})"
+        RUNNER_OS: ${{ matrix.os }}
+        COMPILER: ${{ matrix.compiler }}
+        ARTIFACT_NAME: fermecpp-${{ matrix.os }}-${{ matrix.compiler }}

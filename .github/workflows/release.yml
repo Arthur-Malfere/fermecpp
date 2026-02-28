@@ -44,3 +44,14 @@ jobs:
         files: build/fermecpp${{ runner.os == 'Windows' && '.exe' || '' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send Discord Notification
+      if: always()
+      run: python3 .github/scripts/notify-discord.py
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        JOB_STATUS: ${{ job.status }}
+        BUILD_TITLE: "Release Build - ${{ matrix.os }}"
+        RUNNER_OS: ${{ matrix.os }}
+        COMPILER: "Release"
+        ARTIFACT_NAME: fermecpp-${{ matrix.os }}
