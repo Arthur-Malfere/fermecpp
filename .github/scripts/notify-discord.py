@@ -2,7 +2,8 @@
 import json
 import os
 import sys
-import requests
+import urllib.request
+import urllib.error
 from datetime import datetime
 
 def send_discord_notification(webhook_url, status, title, os_name, compiler, artifact_name=None):
@@ -104,12 +105,18 @@ def send_discord_notification(webhook_url, status, title, os_name, compiler, art
     
     # Envoyer la notification
     try:
-        response = requests.post(webhook_url, json=payload, timeout=10)
-        response.raise_for_status()
-        print("Discord notification sent successfully!")
+        json_data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(webhook_url, data=json_data, method='POST')
+        req.add_header('Content-Type', 'application/json')
+        
+        with urllib.request.urlopen(req, timeout=10) as response:
+            print("Discord notification sent successfully!")
         return True
-    except requests.exceptions.RequestException as e:
+    except (urllib.error.URLError, urllib.error.HTTPError) as e:
         print(f"Failed to send Discord notification: {e}", file=sys.stderr)
+        return False
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
         return False
 
 if __name__ == "__main__":
